@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useAppStore } from "@/lib/store";
 
 export default function StartScreen() {
@@ -62,6 +63,10 @@ export default function StartScreen() {
             </button>
           </>
         )}
+
+        <Link href="/meshy" className="start-meshy-link">
+          사진으로 3D 에셋 만들기 →
+        </Link>
       </div>
     </main>
   );

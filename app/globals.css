@@ -116,6 +116,21 @@ input {
   margin-bottom: 40px;
 }
 
+.start-meshy-link {
+  display: block;
+  width: fit-content;
+  margin: 22px auto 0;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 600;
+  text-underline-offset: 4px;
+  transition: color 0.15s ease;
+}
+
+.start-meshy-link:hover {
+  color: var(--coral-deep);
+}
+
 /* ---------- 아이 프로필 목록 ---------- */
 .profile-list {
   list-style: none;
