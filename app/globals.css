@@ -131,6 +131,19 @@ input {
   color: var(--coral-deep);
 }
 
+.start-account-link {
+  display: block;
+  width: fit-content;
+  margin: 12px auto 0;
+  color: var(--text-soft);
+  font-size: 12px;
+  text-underline-offset: 4px;
+}
+
+.start-account-link:hover {
+  color: var(--coral-deep);
+}
+
 /* ---------- 아이 프로필 목록 ---------- */
 .profile-list {
   list-style: none;

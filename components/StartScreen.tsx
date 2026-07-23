@@ -67,6 +67,9 @@ export default function StartScreen() {
         <Link href="/meshy" className="start-meshy-link">
           사진으로 3D 에셋 만들기 →
         </Link>
+        <Link href="/login" className="start-account-link">
+          로그인 · 회원가입
+        </Link>
       </div>
     </main>
   );

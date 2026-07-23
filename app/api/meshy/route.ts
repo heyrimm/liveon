@@ -1,3 +1,7 @@
+import { randomUUID } from "node:crypto";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+
 export const runtime = "nodejs";
 
 const MESHY_API_URL = "https://api.meshy.ai/openapi/v1/image-to-3d";
@@ -5,6 +9,7 @@ const MAX_DATA_URI_LENGTH = 4_000_000;
 
 interface CreateRequest {
   imageDataUrl: string;
+  sourceName?: string;
 }
 
 function meshyHeaders(apiKey: string) {
@@ -14,25 +19,40 @@ function meshyHeaders(apiKey: string) {
   };
 }
 
-async function readMeshyResponse(response: Response) {
-  const data = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    const message =
-      data && typeof data === "object" && "message" in data
-        ? String(data.message)
-        : "Meshy 요청에 실패했습니다.";
-    return Response.json({ error: message }, { status: response.status });
-  }
-
-  return Response.json(data);
+function cleanAssetName(value?: string) {
+  const fileName = value?.split(/[/\\]/).pop()?.replace(/\.[^.]+$/, "").trim();
+  return (fileName || "새 3D 에셋").slice(0, 100);
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!process.env.DATABASE_URL) {
+    return Response.json(
+      { error: "DATABASE_URL이 설정되지 않았습니다." },
+      { status: 503 }
+    );
+  }
+
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) {
+    return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
+  }
+
   return Response.json({ configured: Boolean(process.env.MESHY_API_KEY) });
 }
 
 export async function POST(request: Request) {
+  if (!process.env.DATABASE_URL) {
+    return Response.json(
+      { error: "DATABASE_URL이 설정되지 않았습니다." },
+      { status: 503 }
+    );
+  }
+
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) {
+    return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
+  }
+
   const apiKey = process.env.MESHY_API_KEY;
   if (!apiKey) {
     return Response.json(
@@ -88,12 +108,39 @@ export async function POST(request: Request) {
       }),
       cache: "no-store",
     });
+    const data = await response.json().catch(() => null);
 
-    return readMeshyResponse(response);
+    if (!response.ok) {
+      const message =
+        data && typeof data === "object" && "message" in data
+          ? String(data.message)
+          : "Meshy 요청에 실패했습니다.";
+      return Response.json({ error: message }, { status: response.status });
+    }
+
+    const taskId =
+      data && typeof data === "object" && "result" in data
+        ? String(data.result)
+        : "";
+    if (!taskId) {
+      return Response.json(
+        { error: "Meshy가 작업 ID를 반환하지 않았습니다." },
+        { status: 502 }
+      );
+    }
+
+    const assetId = randomUUID();
+    await db.query(
+      `INSERT INTO "asset" ("id", "userId", "meshyTaskId", "name")
+       VALUES ($1, $2, $3, $4)`,
+      [assetId, session.user.id, taskId, cleanAssetName(input.sourceName)]
+    );
+
+    return Response.json({ result: taskId, assetId });
   } catch (error) {
     console.error("Meshy create task error:", error);
     return Response.json(
-      { error: "Meshy 서버에 연결하지 못했습니다." },
+      { error: "3D 에셋 작업을 만들거나 저장하지 못했습니다." },
       { status: 502 }
     );
   }

@@ -1,0 +1,42 @@
+.account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--text-soft);
+  font-size: 11px;
+  background: #faf7f1;
+}
+
+.account span {
+  min-width: 0;
+  overflow: hidden;
+  flex: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account a,
+.account button {
+  flex: none;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.account a {
+  text-decoration: none;
+}
+
+.account button {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.account button:disabled {
+  opacity: 0.5;
+}

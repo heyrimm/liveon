@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ChangeEvent, DragEvent, useEffect, useState } from "react";
+import AccountActions from "./AccountActions";
 import GeneratedAssetCanvas from "./GeneratedAssetCanvas";
 import styles from "./MeshyAssetStudio.module.css";
 
@@ -18,8 +19,11 @@ interface ActiveTask {
 interface MeshyTask {
   status: string;
   progress?: number;
-  model_urls?: { glb?: string };
   task_error?: { message?: string };
+}
+
+interface MeshyAssetStudioProps {
+  userEmail: string;
 }
 
 async function readJson<T>(response: Response): Promise<T> {
@@ -74,7 +78,7 @@ async function prepareImage(file: File): Promise<string> {
   return resized;
 }
 
-export default function MeshyAssetStudio() {
+export default function MeshyAssetStudio({ userEmail }: MeshyAssetStudioProps) {
   const [configured, setConfigured] = useState<boolean | null>(null);
   const [imageDataUrl, setImageDataUrl] = useState("");
   const [imageName, setImageName] = useState("");
@@ -113,10 +117,18 @@ export default function MeshyAssetStudio() {
         );
 
         if (task.status === "SUCCEEDED") {
-          const glbUrl = task.model_urls?.glb;
-          if (!glbUrl) throw new Error("완료된 작업에 GLB 파일이 없습니다.");
+          setActiveTask((current) =>
+            current?.id === taskToPoll.id ? { ...current, progress: 100 } : current
+          );
+          const saveResponse = await fetch(
+            `/api/meshy/${encodeURIComponent(taskToPoll.id)}/save`,
+            { method: "POST" }
+          );
+          const saved = await readJson<{
+            asset: { id: string; modelUrl: string };
+          }>(saveResponse);
 
-          setModelUrl(glbUrl);
+          setModelUrl(saved.asset.modelUrl);
           setIsGenerated(true);
           setActiveTask(null);
           return;
@@ -181,7 +193,7 @@ export default function MeshyAssetStudio() {
       const response = await fetch("/api/meshy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageDataUrl }),
+        body: JSON.stringify({ imageDataUrl, sourceName: imageName }),
       });
       const data = await readJson<{ result: string }>(response);
       setActiveTask({ id: data.result, progress: 0 });
@@ -228,6 +240,7 @@ export default function MeshyAssetStudio() {
       </section>
 
       <aside className={styles.panel}>
+        <AccountActions email={userEmail} />
         <p className={styles.eyebrow}>MESHY AI · IMAGE TO 3D</p>
         <h1>
           사진 속 아이를

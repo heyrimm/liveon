@@ -1,11 +1,26 @@
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+
 export const runtime = "nodejs";
 
 const MESHY_API_URL = "https://api.meshy.ai/openapi/v1/image-to-3d";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!process.env.DATABASE_URL) {
+    return Response.json(
+      { error: "DATABASE_URL이 설정되지 않았습니다." },
+      { status: 503 }
+    );
+  }
+
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) {
+    return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
+  }
+
   const apiKey = process.env.MESHY_API_KEY;
   if (!apiKey) {
     return Response.json(
@@ -20,6 +35,15 @@ export async function GET(
   }
 
   try {
+    const ownedAsset = await db.query(
+      `SELECT "id" FROM "asset"
+       WHERE "meshyTaskId" = $1 AND "userId" = $2`,
+      [id, session.user.id]
+    );
+    if (!ownedAsset.rowCount) {
+      return Response.json({ error: "작업을 찾을 수 없습니다." }, { status: 404 });
+    }
+
     const response = await fetch(`${MESHY_API_URL}/${encodeURIComponent(id)}`, {
       headers: { Authorization: `Bearer ${apiKey}` },
       cache: "no-store",
