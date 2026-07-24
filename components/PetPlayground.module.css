@@ -1,7 +1,7 @@
 .page {
   min-height: 100svh;
   padding: 24px clamp(18px, 4vw, 58px) 52px;
-  overflow: hidden;
+  overflow-x: hidden;
   color: var(--text);
   background:
     radial-gradient(circle at 12% 8%, rgba(229, 138, 123, 0.18), transparent 25%),
@@ -244,14 +244,22 @@
   z-index: 6;
   right: 24px;
   bottom: 24px;
+  width: 214px;
+  height: 108px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.directionPad {
   width: 142px;
   height: 108px;
   display: grid;
   grid-template-columns: repeat(3, 42px);
   grid-template-rows: repeat(2, 42px);
   gap: 7px;
-  pointer-events: auto;
-  touch-action: none;
 }
 
 .touchControls button {
@@ -276,6 +284,26 @@
 
 .touchControls button:disabled {
   opacity: 0.38;
+}
+
+.touchControls .jumpControl {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-color: rgba(212, 113, 95, 0.25);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  background: rgba(212, 113, 95, 0.86);
+}
+
+.jumpControl span {
+  font-size: 16px;
+  line-height: 0.9;
 }
 
 .controlUp {
@@ -309,6 +337,28 @@
   pointer-events: none;
 }
 
+.notice {
+  position: absolute;
+  z-index: 7;
+  top: 118px;
+  left: 50%;
+  max-width: calc(100% - 44px);
+  padding: 9px 14px;
+  border: 1px solid rgba(77, 69, 60, 0.1);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  background: rgba(255, 253, 248, 0.88);
+  box-shadow: 0 8px 26px rgba(78, 64, 48, 0.1);
+  backdrop-filter: blur(14px);
+  transform: translateX(-50%);
+  animation: noticeIn 0.25s ease both;
+  pointer-events: none;
+}
+
 .heartBurst {
   display: block;
   color: var(--coral-deep);
@@ -317,6 +367,20 @@
   filter: drop-shadow(0 6px 8px rgba(163, 75, 59, 0.2));
   pointer-events: none;
   animation: heart 0.9s ease-out both;
+}
+
+.reactionBubble {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: var(--coral-deep);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  background: rgba(255, 253, 248, 0.92);
+  box-shadow: 0 8px 20px rgba(88, 67, 46, 0.12);
+  pointer-events: none;
+  animation: reaction 1.2s ease-out both;
 }
 
 .modelLoading {
@@ -336,6 +400,7 @@
 }
 
 .scoreCard,
+.interactionPanel,
 .assetPanel,
 .guide {
   border: 1px solid rgba(99, 88, 72, 0.11);
@@ -381,9 +446,111 @@
   font-size: 9px;
 }
 
+.interactionPanel,
 .assetPanel,
 .guide {
   padding: 19px;
+}
+
+.nameField {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.nameField > span {
+  color: var(--text-soft);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.nameField input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 10px 11px;
+  outline: none;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 650;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nameField input:focus {
+  border-color: var(--coral);
+  box-shadow: 0 0 0 3px rgba(229, 138, 123, 0.1);
+}
+
+.interactionActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.78fr;
+  gap: 6px;
+}
+
+.interactionActions button {
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  padding: 9px 5px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  color: var(--text);
+  font-size: 8px;
+  font-weight: 750;
+  background: #fff;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.interactionActions button:hover:not(:disabled) {
+  border-color: var(--coral);
+  color: var(--coral-deep);
+  transform: translateY(-1px);
+}
+
+.interactionActions button:disabled {
+  cursor: default;
+  opacity: 0.42;
+}
+
+.interactionActions button > span {
+  color: var(--coral-deep);
+  font-size: 15px;
+  line-height: 1;
+}
+
+.affection {
+  margin-top: 13px;
+}
+
+.affection > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-soft);
+  font-size: 9px;
+  margin-bottom: 6px;
+}
+
+.affection strong {
+  color: var(--coral-deep);
+  font-size: 10px;
+}
+
+.affectionTrack {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eee4d7;
+}
+
+.affectionTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #e8a196, var(--coral-deep));
+  transition: width 0.25s ease;
 }
 
 .sectionHeading {
@@ -585,6 +752,33 @@
   }
 }
 
+@keyframes reaction {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.85);
+  }
+  20%,
+  70% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.92);
+  }
+}
+
+@keyframes noticeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
 @media (max-width: 980px) {
   .page {
     padding-inline: 18px;
@@ -602,9 +796,6 @@
     grid-template-columns: 0.65fr 1.35fr;
   }
 
-  .guide {
-    grid-column: 1 / -1;
-  }
 }
 
 @media (max-width: 640px) {
@@ -677,7 +868,7 @@
   .petHint {
     bottom: 22px;
     left: 16px;
-    max-width: 90px;
+    max-width: 120px;
   }
 
   .overlayCard {
@@ -691,13 +882,20 @@
   .guide {
     grid-column: auto;
   }
+
+  .notice {
+    top: 98px;
+    white-space: normal;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .intro,
   .gameLayout,
   .overlayCard,
-  .heartBurst {
+  .heartBurst,
+  .reactionBubble,
+  .notice {
     animation: none;
   }
 }
