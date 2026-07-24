@@ -330,6 +330,20 @@ export default function MeshyAssetStudio({
           )}
         </section>
 
+        {selectedAssetId && (
+          <Link
+            href={`/play?asset=${encodeURIComponent(selectedAssetId)}`}
+            className={styles.playLink}
+          >
+            <span className={styles.playLinkIcon}>♥</span>
+            <span>
+              <strong>이 아이와 간식 찾기</strong>
+              <small>선택한 3D 에셋으로 미니게임을 시작해요.</small>
+            </span>
+            <b aria-hidden="true">→</b>
+          </Link>
+        )}
+
         <div className={styles.label}>
           <span>참고 이미지</span>
           <span>JPG · PNG</span>
