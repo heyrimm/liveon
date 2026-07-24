@@ -8,6 +8,7 @@ const MAX_GLB_SIZE = 25 * 1024 * 1024;
 
 interface OwnedAsset {
   id: string;
+  name: string;
   status: "pending" | "ready" | "failed";
 }
 
@@ -43,7 +44,7 @@ export async function POST(
 
   const { id: taskId } = await params;
   const assetResult = await db.query<OwnedAsset>(
-    `SELECT "id", "status" FROM "asset"
+    `SELECT "id", "name", "status" FROM "asset"
      WHERE "meshyTaskId" = $1 AND "userId" = $2`,
     [taskId, session.user.id]
   );
@@ -56,6 +57,7 @@ export async function POST(
     return Response.json({
       asset: {
         id: asset.id,
+        name: asset.name,
         modelUrl: `/api/assets/${asset.id}/model`,
       },
     });
@@ -142,6 +144,7 @@ export async function POST(
     return Response.json({
       asset: {
         id: asset.id,
+        name: asset.name,
         modelUrl: `/api/assets/${asset.id}/model`,
       },
     });

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -20,7 +19,6 @@ export default function AccountActions({ email }: { email: string }) {
   return (
     <div className={styles.account}>
       <span title={email}>{email}</span>
-      <Link href="/assets">내 에셋</Link>
       <button onClick={signOut} disabled={isSigningOut}>
         {isSigningOut ? "…" : "로그아웃"}
       </button>

@@ -138,6 +138,126 @@
   margin-bottom: 32px;
 }
 
+.assetPicker {
+  margin-bottom: 28px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: #faf7f1;
+}
+
+.assetPickerHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.assetPickerHeader div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.assetPickerHeader strong {
+  font-size: 13px;
+}
+
+.assetPickerHeader div span,
+.assetPickerHeader > span {
+  color: var(--text-soft);
+  font-size: 10px;
+}
+
+.assetOptions {
+  max-height: 188px;
+  display: grid;
+  gap: 8px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.assetOptions button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--text);
+  text-align: left;
+  background: #fff;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.assetOptions button:hover:not(:disabled) {
+  border-color: var(--coral);
+  transform: translateY(-1px);
+}
+
+.assetOptions button.assetOptionSelected {
+  border-color: var(--coral);
+  background: #fff7f3;
+  box-shadow: 0 0 0 3px rgba(229, 138, 123, 0.09);
+}
+
+.assetOptions button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.assetOptionIcon {
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 10px;
+  color: var(--coral-deep);
+  font-size: 10px;
+  font-weight: 800;
+  background: #f8e8e2;
+}
+
+.assetOptionCopy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  flex: 1;
+}
+
+.assetOptionCopy strong {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assetOptionCopy small {
+  color: var(--text-soft);
+  font-size: 9px;
+}
+
+.assetOptionState {
+  flex: none;
+  color: var(--coral-deep);
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.assetPickerEmpty {
+  padding: 13px;
+  border: 1px dashed var(--line);
+  border-radius: 11px;
+  color: var(--text-soft);
+  font-size: 10px;
+  line-height: 1.55;
+  text-align: center;
+  background: #fff;
+}
+
 .label {
   display: flex;
   justify-content: space-between;

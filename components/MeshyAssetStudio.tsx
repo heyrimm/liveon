@@ -22,8 +22,15 @@ interface MeshyTask {
   task_error?: { message?: string };
 }
 
+export interface MeshyAssetOption {
+  id: string;
+  name: string;
+  createdAt: string;
+}
+
 interface MeshyAssetStudioProps {
   userEmail: string;
+  initialAssets: MeshyAssetOption[];
 }
 
 async function readJson<T>(response: Response): Promise<T> {
@@ -78,14 +85,22 @@ async function prepareImage(file: File): Promise<string> {
   return resized;
 }
 
-export default function MeshyAssetStudio({ userEmail }: MeshyAssetStudioProps) {
+export default function MeshyAssetStudio({
+  userEmail,
+  initialAssets,
+}: MeshyAssetStudioProps) {
+  const initialAsset = initialAssets[0];
   const [configured, setConfigured] = useState<boolean | null>(null);
   const [imageDataUrl, setImageDataUrl] = useState("");
   const [imageName, setImageName] = useState("");
   const [activeTask, setActiveTask] = useState<ActiveTask | null>(null);
-  const [modelUrl, setModelUrl] = useState(FALLBACK_MODEL_URL);
+  const [savedAssets, setSavedAssets] = useState(initialAssets);
+  const [selectedAssetId, setSelectedAssetId] = useState(initialAsset?.id || "");
+  const [modelUrl, setModelUrl] = useState(
+    initialAsset ? `/api/assets/${initialAsset.id}/model` : FALLBACK_MODEL_URL
+  );
   const [error, setError] = useState("");
-  const [isGenerated, setIsGenerated] = useState(false);
+  const [isGenerated, setIsGenerated] = useState(Boolean(initialAsset));
   const [isPreparingImage, setIsPreparingImage] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -125,9 +140,18 @@ export default function MeshyAssetStudio({ userEmail }: MeshyAssetStudioProps) {
             { method: "POST" }
           );
           const saved = await readJson<{
-            asset: { id: string; modelUrl: string };
+            asset: { id: string; name: string; modelUrl: string };
           }>(saveResponse);
 
+          setSavedAssets((current) => [
+            {
+              id: saved.asset.id,
+              name: saved.asset.name,
+              createdAt: new Date().toISOString(),
+            },
+            ...current.filter((asset) => asset.id !== saved.asset.id),
+          ]);
+          setSelectedAssetId(saved.asset.id);
           setModelUrl(saved.asset.modelUrl);
           setIsGenerated(true);
           setActiveTask(null);
@@ -163,8 +187,6 @@ export default function MeshyAssetStudio({ userEmail }: MeshyAssetStudioProps) {
       const prepared = await prepareImage(file);
       setImageDataUrl(prepared);
       setImageName(file.name);
-      setIsGenerated(false);
-      setModelUrl(FALLBACK_MODEL_URL);
     } catch (imageError) {
       setError(imageError instanceof Error ? imageError.message : "이미지를 준비하지 못했습니다.");
     } finally {
@@ -187,7 +209,6 @@ export default function MeshyAssetStudio({ userEmail }: MeshyAssetStudioProps) {
     if (!imageDataUrl || activeTask) return;
 
     setError("");
-    setIsGenerated(false);
 
     try {
       const response = await fetch("/api/meshy", {
@@ -204,11 +225,22 @@ export default function MeshyAssetStudio({ userEmail }: MeshyAssetStudioProps) {
     }
   }
 
+  function selectSavedAsset(asset: MeshyAssetOption) {
+    if (activeTask) return;
+    setSelectedAssetId(asset.id);
+    setModelUrl(`/api/assets/${asset.id}/model`);
+    setIsGenerated(true);
+    setError("");
+  }
+
+  const selectedAsset = savedAssets.find((asset) => asset.id === selectedAssetId);
   const statusLabel = activeTask
     ? "사진을 3D 모델로 만들고 있어요"
-    : isGenerated
-      ? "Meshy 에셋 생성 완료"
-      : "기본 LiveOn 모델 미리보기";
+    : selectedAsset
+      ? `${selectedAsset.name} 선택됨`
+      : isGenerated
+        ? "Meshy 에셋 생성 완료"
+        : "기본 LiveOn 모델 미리보기";
 
   return (
     <main className={styles.page}>
@@ -251,6 +283,44 @@ export default function MeshyAssetStudio({ userEmail }: MeshyAssetStudioProps) {
           아이가 선명하게 나온 사진 한 장을 올려주세요. Meshy 6가 형태와 색, 재질을
           분석해 회전 가능한 3D 모델로 만들어요.
         </p>
+
+        <section className={styles.assetPicker}>
+          <div className={styles.assetPickerHeader}>
+            <div>
+              <strong>사용할 3D 에셋</strong>
+              <span>만든 에셋을 선택하면 왼쪽에 바로 보여요.</span>
+            </div>
+            <span>{savedAssets.length}개</span>
+          </div>
+          {savedAssets.length > 0 ? (
+            <div className={styles.assetOptions}>
+              {savedAssets.map((asset) => (
+                <button
+                  key={asset.id}
+                  type="button"
+                  className={selectedAssetId === asset.id ? styles.assetOptionSelected : ""}
+                  disabled={Boolean(activeTask)}
+                  onClick={() => selectSavedAsset(asset)}
+                >
+                  <span className={styles.assetOptionIcon}>3D</span>
+                  <span className={styles.assetOptionCopy}>
+                    <strong>{asset.name}</strong>
+                    <small>
+                      {new Date(asset.createdAt).toLocaleDateString("ko-KR")}
+                    </small>
+                  </span>
+                  <span className={styles.assetOptionState}>
+                    {selectedAssetId === asset.id ? "선택됨" : "보기"}
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.assetPickerEmpty}>
+              아직 만든 에셋이 없어요. 아래에서 사진을 올려 첫 에셋을 만들어보세요.
+            </p>
+          )}
+        </section>
 
         <div className={styles.label}>
           <span>참고 이미지</span>
