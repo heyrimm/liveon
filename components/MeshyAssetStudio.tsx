@@ -284,6 +284,14 @@ export default function MeshyAssetStudio({
           분석해 회전 가능한 3D 모델로 만들어요.
         </p>
 
+        <Link href="/?start=customize" className={styles.customizeLink}>
+          <span>
+            <strong>사진 없이 직접 꾸미기</strong>
+            <small>색, 무늬, 귀 모양을 골라 아이를 만들어보세요.</small>
+          </span>
+          <b aria-hidden="true">→</b>
+        </Link>
+
         <section className={styles.assetPicker}>
           <div className={styles.assetPickerHeader}>
             <div>

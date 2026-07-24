@@ -21,9 +21,9 @@ export default function StartScreen() {
               <br />
               미처 하지 못했던 인사를 천천히 나눠보세요.
             </p>
-            <button className="btn-primary" onClick={() => s.startNewProfile()}>
+            <Link href="/login?next=%2Fmeshy" className="btn-primary start-primary-link">
               우리 아이 만나러 가기
-            </button>
+            </Link>
           </>
         )}
 

@@ -12,8 +12,17 @@ export default function Home() {
 
   // localStorage의 저장 상태(꾸미기 결과, 화면 위치)를 마운트 후 복원
   useEffect(() => {
-    useAppStore.persist.rehydrate();
-    setHydrated(true);
+    void Promise.resolve(useAppStore.persist.rehydrate()).then(() => {
+      const shouldCustomize =
+        new URLSearchParams(window.location.search).get("start") === "customize";
+
+      if (shouldCustomize) {
+        useAppStore.getState().startNewProfile();
+        window.history.replaceState({}, "", "/");
+      }
+
+      setHydrated(true);
+    });
   }, []);
 
   if (!hydrated) return null;
