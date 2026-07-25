@@ -62,6 +62,11 @@ input {
   box-shadow: none;
 }
 
+.start-primary-link {
+  display: inline-block;
+  text-decoration: none;
+}
+
 .btn-full {
   width: 100%;
   margin-top: 8px;
@@ -114,6 +119,34 @@ input {
   line-height: 1.8;
   color: var(--text-soft);
   margin-bottom: 40px;
+}
+
+.start-meshy-link {
+  display: block;
+  width: fit-content;
+  margin: 22px auto 0;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 600;
+  text-underline-offset: 4px;
+  transition: color 0.15s ease;
+}
+
+.start-meshy-link:hover {
+  color: var(--coral-deep);
+}
+
+.start-account-link {
+  display: block;
+  width: fit-content;
+  margin: 12px auto 0;
+  color: var(--text-soft);
+  font-size: 12px;
+  text-underline-offset: 4px;
+}
+
+.start-account-link:hover {
+  color: var(--coral-deep);
 }
 
 /* ---------- 아이 프로필 목록 ---------- */

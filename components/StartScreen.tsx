@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useAppStore } from "@/lib/store";
 
 export default function StartScreen() {
@@ -20,9 +21,9 @@ export default function StartScreen() {
               <br />
               미처 하지 못했던 인사를 천천히 나눠보세요.
             </p>
-            <button className="btn-primary" onClick={() => s.startNewProfile()}>
+            <Link href="/login?next=%2Fmeshy" className="btn-primary start-primary-link">
               우리 아이 만나러 가기
-            </button>
+            </Link>
           </>
         )}
 
@@ -62,6 +63,13 @@ export default function StartScreen() {
             </button>
           </>
         )}
+
+        <Link href="/meshy" className="start-meshy-link">
+          사진으로 3D 에셋 만들기 →
+        </Link>
+        <Link href="/login" className="start-account-link">
+          로그인 · 회원가입
+        </Link>
       </div>
     </main>
   );

@@ -82,11 +82,9 @@ export default function CustomizeScreen() {
       </div>
 
       <aside className="customize-panel">
-        {s.profiles.length > 0 && (
-          <button className="btn-back panel-back" onClick={() => s.set({ screen: "start" })}>
-            ← 아이 목록
-          </button>
-        )}
+        <button className="btn-back panel-back" onClick={() => s.set({ screen: "start" })}>
+          ← {s.profiles.length > 0 ? "아이 목록" : "처음으로"}
+        </button>
         <h2 className="panel-title">우리 아이를 기억하며 만들어주세요</h2>
         <p className="panel-sub">털 색, 점 하나까지 떠올리는 시간도 아이와의 소중한 기억이에요.</p>
 
